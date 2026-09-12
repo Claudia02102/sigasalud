@@ -1,10 +1,10 @@
-export type Screen = 'inicio' | 'identificacion' | 'verificacion' | 'seleccion' | 'confirmacion' | 'comprobante' | 'derivacion'
+export type Screen = 'inicio' | 'identificacion' | 'verificacion' | 'especialidades' | 'cupos' | 'seleccion' | 'confirmacion' | 'comprobante' | 'derivacion' | 'ingreso' | 'metricas'
 export type Status = 'vigente' | 'vencida' | 'no-encontrada'
 export type Specialty = 'Cardiología' | 'Dermatología' | 'Medicina general' | 'Traumatología'
 
 export type Reference = { specialty: Specialty; origin: string; validUntil: string; status: Status }
-export type PatientRecord = { document: string; reference?: Reference }
-export type Slot = { id: string; date: string; time: string; specialty: Specialty; available: number }
+export type PatientRecord = { document: string; references?: Reference[] }
+export type Slot = { id: string; date: string; time: string; specialty: Specialty; available: number; doctor: string }
 export type Appointment = Slot & { code: string; document: string }
 export type SessionMetrics = { attempts: number; derivations: number; abandoned: number; screenTimes: Record<string, number> }
 export type DemoProps = { onNavigate: (screen: Screen) => void; onHelp: () => void }
