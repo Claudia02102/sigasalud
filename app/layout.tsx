@@ -3,8 +3,8 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Salud Norte | Turnos digitales',
-  description: 'Kiosco de autogestión para reservar turnos médicos.',
+  title: 'SIGA Salud | Turnos digitales',
+  description: 'SIGA Salud: kiosco de autogestión para reservar turnos médicos.',
   generator: 'v0.app',
   icons: {
     icon: [
