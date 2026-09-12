@@ -1,47 +1,21 @@
+'use client'
+import { useEffect, useState } from 'react'
+import { Confirmacion, Comprobante, Derivacion, Identificacion, Inicio, Ingreso, Metricas, Seleccion, Verificacion } from '@/components/kiosco-screens'
+import type { Appointment, Screen, Slot } from '@/lib/types'
+import { reserveSlot } from '@/lib/registro-simulado'
+
 export default function Page() {
-  return (
-    <main
-      style={{
-        colorScheme: 'light dark',
-        position: 'relative',
-        display: 'flex',
-        minHeight: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'light-dark(#fff, #000)',
-        color: 'light-dark(#000, #fff)',
-      }}
-    >
-      <svg
-        aria-hidden="true"
-        style={{ width: 80, height: 80 }}
-        width={80}
-        height={80}
-        fill="none"
-        viewBox="0 0 20 20"
-        xmlns="http://www.w3.org/2000/svg"
-        stroke="currentColor"
-        strokeWidth="0.5"
-      >
-        <path
-          d="M14.2 14.2H17V6.9375C17 4.76288 15.2371 3 13.0625 3H5.8V5.8M14.2 14.2V7.79063L7.79062 14.2H14.2ZM14.2 14.2V17H6.9375C4.76288 17 3 15.2371 3 13.0625V5.8H5.8M5.8 5.8V12.2313L12.2313 5.8H5.8Z"
-          strokeLinejoin="round"
-        />
-      </svg>
-      <p
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: 'calc(50% + 56px)',
-          transform: 'translateX(-50%)',
-          whiteSpace: 'nowrap',
-          fontSize: '14px',
-          fontWeight: 500,
-          color: 'light-dark(#71717a, #a1a1aa)',
-        }}
-      >
-        Your v0 generation will show here.
-      </p>
-    </main>
-  )
+  const [screen, setScreen] = useState<Screen>('inicio')
+  const [document, setDocument] = useState('12345678')
+  const [selected, setSelected] = useState<Slot | null>(null)
+  const [appointment, setAppointment] = useState<Appointment | null>(null)
+  const [help, setHelp] = useState(false)
+
+  useEffect(() => { if (screen === 'comprobante') { const timer = setTimeout(() => setScreen('inicio'), 20000); return () => clearTimeout(timer) } }, [screen])
+  const navigate = (next: Screen) => { if (next === 'verificacion' && !document) setDocument('12345678'); if (next === 'comprobante' && selected) setAppointment(reserveSlot(selected.id, document) ?? null); setScreen(next) }
+  const back = () => setScreen(screen === 'seleccion' ? 'verificacion' : screen === 'confirmacion' ? 'seleccion' : 'inicio')
+  if (screen === 'ingreso') return <Ingreso />
+  if (screen === 'metricas') return <Metricas />
+  const props = { onNavigate: navigate, onHelp: () => setHelp(true) }
+  return <><div className="demo-controls"><button onClick={() => setScreen('ingreso')}>Ingreso</button><button onClick={() => setScreen('metricas')}>Métricas</button></div>{screen === 'inicio' && <Inicio {...props} />}{screen === 'identificacion' && <Identificacion {...props} onBack={back} />}{screen === 'verificacion' && <Verificacion {...props} onBack={back} document={document} />}{screen === 'seleccion' && <Seleccion {...props} onBack={back} document={document} onSelected={setSelected} />}{screen === 'confirmacion' && selected && <Confirmacion {...props} onBack={back} document={document} selected={selected} />}{screen === 'comprobante' && appointment && <Comprobante {...props} appointment={appointment} />}{screen === 'derivacion' && <Derivacion {...props} reason="No fue posible completar la consulta." />}{help && <div className="help-overlay" role="dialog" aria-modal="true"><div className="help-modal"><h2>Estamos para ayudarte</h2><p>Acercate al personal de recepción. Te van a acompañar con tu turno.</p><button onClick={() => setHelp(false)}>Cerrar</button></div></div>}</>
 }
